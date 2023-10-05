@@ -12,13 +12,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 public class SetupTest {
     WebDriver driver;
 
     @Test
     public void test() {
-        System.setProperty("webdriver.chrome.driver",
-                "C:\\Users\\LENOVO\\Downloads\\chromedriver-win64\\chromedriver.exe");
+        // System.setProperty("webdriver.chrome.driver",
+        //         "C:\\Users\\LENOVO\\Downloads\\chromedriver-win64\\chromedriver.exe");
+        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
         driver.manage().window().maximize();
 
