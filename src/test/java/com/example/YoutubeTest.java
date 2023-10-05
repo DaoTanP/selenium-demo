@@ -23,8 +23,8 @@ import com.opencsv.exceptions.CsvException;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class LoginTest {
-    String CSV_PATH = "src/test/java/com/example/LoginTestData.csv";
+public class YoutubeTest {
+    String CSV_PATH = "src/test/java/com/example/YoutubeTestData.csv";
     WebDriver driver;
     private CSVReader csvReader;
     String[] csvCell;
@@ -46,7 +46,7 @@ public class LoginTest {
     public Object[][] testData() throws IOException, CsvException {
         csvReader = new CSVReader(new FileReader(CSV_PATH));
         List<String[]> csvData = csvReader.readAll();
-        Object[][] testData = new Object[csvData.size()][3];
+        Object[][] testData = new Object[csvData.size()][2];
         for (int i = 0; i < csvData.size(); i++) {
             testData[i] = csvData.get(i);
         }
@@ -54,27 +54,19 @@ public class LoginTest {
     }
 
     @Test(dataProvider = "TESTDATA")
-    public void test(String username, String password, String expectedUrl) {
-        driver.navigate().to("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
+    public void test(String searchTerm, String expectedFirstVideoTitle) {
+        driver.navigate().to("https://www.youtube.com");
         wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".oxd-input.oxd-input--active")));
-        WebElement usernameField = driver.findElement(By.name("username"));
-        WebElement passwordField = driver.findElement(By.name("password"));
-        WebElement loginButton = driver
-                .findElement(By.cssSelector(".oxd-button.oxd-button--medium.oxd-button--main.orangehrm-login-button"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("search_query")));
+        WebElement searchInput = driver.findElement(By.name("search_query"));
+        WebElement searchButton = driver.findElement(By.id("search-icon-legacy"));
 
-        evaluate(usernameField, passwordField, loginButton, username, password, expectedUrl);
-    }
+        searchInput.sendKeys(searchTerm);
+        searchButton.click();
 
-    public void evaluate(WebElement u, WebElement p, WebElement lb, String username, String password,
-            String expectedUrl) {
-        u.sendKeys(username);
-        p.sendKeys(password);
-        lb.click();
+        String actualFirstVideoTitle = driver.findElement(By.cssSelector("#video-title > .yt-formatted-string")).getText();
 
-        String actualUrl = driver.getCurrentUrl();
-
-        Assert.assertEquals(expectedUrl, actualUrl);
+        Assert.assertEquals(expectedFirstVideoTitle, actualFirstVideoTitle);
     }
 
     @AfterMethod
